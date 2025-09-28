@@ -7,7 +7,6 @@ import SurveyEdit from './SurveyEdit';
 import SurveyCreate from './SurveyCreate';
 import Modal from '../modals/Modal';
 import { surveyService } from '../../services/surveyService';
-import { localSurveyService } from '../../services/localSurveyService';
 
 const Overview = () => {
   const { t } = useTranslation();
@@ -20,19 +19,19 @@ const Overview = () => {
   const [deleteModal, setDeleteModal] = useState({ show: false, surveyId: null });
 
   useEffect(() => {
-    (async () => {
+    async function fetchSurveys() {
       try {
-        const remoteSurveys = await surveyService.list();
-        const localSurveys = localSurveyService.getAll();
-        setSurveys([...localSurveys, ...remoteSurveys]);
+        setLoading(true);
+        const data = await surveyService.list();
+        setSurveys(data);
       } catch (err) {
         console.error(err);
-        setError(t('failed_fetch'));
-        setSurveys(localSurveyService.getAll());
+        setError(t('error_fetching_surveys'));
       } finally {
         setLoading(false);
       }
-    })();
+    }
+    fetchSurveys();
   }, [t]);
 
   const goToList = () => {
@@ -62,13 +61,8 @@ const Overview = () => {
 
   const handleModalConfirm = async () => {
     const id = deleteModal.surveyId;
-    const isLocal = String(id).startsWith('local-');
     try {
-      if (isLocal) {
-        localSurveyService.remove(id);
-      } else {
-        await surveyService.delete(id);
-      }
+      await surveyService.delete(id);
       setSurveys(prev => prev.filter(s => s.id !== id));
       toast.success(t('deleted_successfully'));
     } catch (err) {

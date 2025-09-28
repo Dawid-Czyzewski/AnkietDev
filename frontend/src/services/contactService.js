@@ -1,18 +1,57 @@
 import { API_BASE } from '../config';
 
-export async function sendContactForm({ name, email, message }) {
-  const response = await fetch(`${API_BASE}/?controller=contact&action=send`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name, email, message }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || "Unknown error");
+class ContactService {
+  constructor() {
+    this.baseUrl = API_BASE;
+    this.endpoint = '/?controller=contact&action=send';
   }
 
-  return response.json();
+  async sendContactForm({ name, email, message }) {
+    try {
+      const response = await this.makeRequest({ name, email, message });
+      return await this.handleResponse(response);
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  async makeRequest(data) {
+    return fetch(`${this.baseUrl}${this.endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async handleResponse(response) {
+    if (!response.ok) {
+      const errorData = await this.parseErrorResponse(response);
+      throw new Error(errorData.error || 'Request failed');
+    }
+
+    return response.json();
+  }
+
+  async parseErrorResponse(response) {
+    try {
+      return await response.json();
+    } catch {
+      return { error: 'Unknown error occurred' };
+    }
+  }
+
+  handleError(error) {
+    if (error instanceof Error) {
+      return error;
+    }
+    
+    return new Error('An unexpected error occurred');
+  }
 }
+
+const contactService = new ContactService();
+
+export const sendContactForm = (formData) => contactService.sendContactForm(formData);
+export default contactService;

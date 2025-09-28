@@ -24,6 +24,8 @@ class SurveyController
     public function list(array $data = []): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_lifetime', 31536000);
+            ini_set('session.gc_maxlifetime', 31536000);
             session_start();
         }
 
@@ -39,44 +41,44 @@ class SurveyController
 
         try {
             $surveys = $this->service->getSurveysByUser($userId);
-            $output = [];
-
-            foreach ($surveys as $survey) {
+            
+            $output = array_map(function(Survey $survey) {
                 $questions = $this->service->getQuestionsBySurveyId($survey->getId());
-
-                $questionsOutput = [];
-                foreach ($questions as $q) {
+                
+                $outputQuestions = array_map(function(Question $q) {
                     $answers = $this->answerService->getAnswersByQuestionId($q->getId());
-                    $questionsOutput[] = [
-                        'id'          => $q->getId(),
-                        'text'        => $q->getName(),
+                    return [
+                        'id' => $q->getId(),
+                        'text' => $q->getName(),
                         'orderNumber' => $q->getOrderNumber(),
-                        'type'        => $q->getType(),
-                        'options'     => $q->getOptions(),
-                        'answers'     => array_map(fn(Answer $a) => [
-                                            'id'         => $a->getId(),
-                                            'surveyId'   => $a->getSurveyId(),
-                                            'questionId' => $a->getQuestionId(),
-                                            'text'       => $a->getAnswerText(),
-                                            ], $answers),
+                        'type' => $q->getType(),
+                        'options' => $q->getOptions(),
+                        'answers' => array_map(function(Answer $a) {
+                            return [
+                                'id' => $a->getId(),
+                                'surveyId' => $a->getSurveyId(),
+                                'questionId' => $a->getQuestionId(),
+                                'text' => $a->getAnswerText(),
+                            ];
+                        }, $answers)
                     ];
-                }
+                }, $questions);
 
-                $output[] = [
-                    'id'          => $survey->getId(),
-                    'title'       => $survey->getTitle(),
+                return [
+                    'id' => $survey->getId(),
+                    'title' => $survey->getTitle(),
                     'createdDate' => $survey->getCreatedDate()->format(\DateTime::ATOM),
-                    'expireDate'  => $survey->getExpireDate()?->format(\DateTime::ATOM),
-                    'userId'      => $survey->getUserId(),
-                    'questions'   => $questionsOutput,
+                    'expireDate' => $survey->getExpireDate()?->format(\DateTime::ATOM),
+                    'userId' => $survey->getUserId(),
+                    'questions' => $outputQuestions
                 ];
-            }
+            }, $surveys);
 
             http_response_code(200);
             echo json_encode($output);
 
-        } catch (Throwable $e) {
-            print_r($e->getMessage());
+        } catch (\Throwable $e) {
+            error_log((string)$e);
             http_response_code(500);
             echo json_encode(['error' => 'Internal server error']);
         }
@@ -85,6 +87,8 @@ class SurveyController
     public function get(array $data = []): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_lifetime', 31536000);
+            ini_set('session.gc_maxlifetime', 31536000);
             session_start();
         }
 
@@ -167,6 +171,8 @@ class SurveyController
     public function delete(array $data = []): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_lifetime', 31536000);
+            ini_set('session.gc_maxlifetime', 31536000);
             session_start();
         }
 
@@ -247,6 +253,8 @@ class SurveyController
     public function update(array $data = []): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_lifetime', 31536000);
+            ini_set('session.gc_maxlifetime', 31536000);
             session_start();
         }
 
@@ -379,6 +387,8 @@ class SurveyController
     public function create(array $data = []): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_lifetime', 31536000);
+            ini_set('session.gc_maxlifetime', 31536000);
             session_start();
         }
 

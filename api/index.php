@@ -1,4 +1,10 @@
 <?php
+ini_set('session.cookie_lifetime', 31536000);
+ini_set('session.gc_maxlifetime', 31536000);
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 0);
+ini_set('session.use_strict_mode', 1);
+
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");

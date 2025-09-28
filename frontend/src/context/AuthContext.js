@@ -25,7 +25,7 @@ const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const data = await apiService.login({ email, password });
-      const u = { user_id: data.user_id, email: data.email };
+      const u = { user_id: data.user?.id || data.user_id, email: data.user?.email || data.email };
       setUser(u);
       localStorage.setItem('user', JSON.stringify(u));
       toast.success(t('login_success'));
@@ -42,18 +42,15 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiService.logout();
-      setUser(null);
-      localStorage.removeItem('user');
-      toast.success(t('logoutSuccess'));
-      navigate('/', { replace: true });
-      return true;
     } catch (err) {
-      const msg = err.isNetworkError
-        ? t('network_error')
-        : err.message || t('logout_error');
-      toast.error(msg);
-      return false;
+      console.error('Logout API error:', err);
     }
+    
+    setUser(null);
+    localStorage.removeItem('user');
+    toast.success(t('logout_success'));
+    navigate('/', { replace: true });
+    return true;
   };
 
   return (
