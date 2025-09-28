@@ -74,9 +74,14 @@ const Overview = () => {
   };
 
   const handleCreate = async survey => {
-    setSurveys(prev => [survey, ...prev]);
-    toast.success(t('created_successfully'));
-    goToList();
+    try {
+      setSurveys(prev => [survey, ...prev]);
+      toast.success(t('created_successfully'));
+      goToList();
+    } catch (err) {
+      console.error('Error in handleCreate:', err);
+      toast.error(t('error_creating_survey'));
+    }
   };
 
   const handleUpdate = async survey => {

@@ -100,10 +100,15 @@ const SurveyCreate = ({ onSave, onBack }) => {
     setCreating(true);
     try {
       const createdSurvey = await surveyService.create(payload);
-      onSave(createdSurvey);
+
+      if (onSave && typeof onSave === 'function') {
+        onSave(createdSurvey);
+      } else {
+        console.error('onSave callback is not a function:', onSave);
+      }
     } catch (err) {
-      console.error(err);
-      alert(t('failed_create'));
+      console.error('Error creating survey:', err);
+      toast.error(t('failed_create'));
     } finally {
       setCreating(false);
     }
