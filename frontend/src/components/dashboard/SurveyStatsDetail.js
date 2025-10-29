@@ -138,7 +138,7 @@ const SurveyStatsDetail = ({ surveyId }) => {
               <div className="flex items-center space-x-4 text-gray-400 text-sm">
                 <div className="flex items-center space-x-1">
                   <span>❓</span>
-                  <span>{survey.questions.length} {survey.questions.length === 1 ? t('question_singular') : t('question_plural')}</span>
+                  <span>{(survey.questions || []).length} {(survey.questions || []).length === 1 ? t('question_singular') : t('question_plural')}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span>📈</span>
@@ -150,7 +150,7 @@ const SurveyStatsDetail = ({ surveyId }) => {
         </div>
 
 
-      {survey.questions.length === 0 ? (
+      {(survey.questions || []).length === 0 ? (
           <div className="group relative backdrop-blur-xl bg-gray-800/30 border border-white/10 rounded-2xl p-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-gray-500/20 to-gray-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -162,7 +162,7 @@ const SurveyStatsDetail = ({ surveyId }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {survey.questions.map((q, index) => {
+            {(survey.questions || []).map((q, index) => {
             const answers = Array.isArray(q.answers) ? q.answers : [];
             const total = answers.length;
 

@@ -6,7 +6,7 @@ import { enUS, pl } from 'date-fns/locale';
 const SurveyView = ({ survey, onBack }) => {
   const { t, i18n } = useTranslation();
   const [answers, setAnswers] = useState(
-    survey.questions.reduce((acc, q) => ({ ...acc, [q.id]: '' }), {})
+    (survey.questions || []).reduce((acc, q) => ({ ...acc, [q.id]: '' }), {})
   );
   const [copied, setCopied] = useState(false);
 
@@ -87,11 +87,11 @@ const SurveyView = ({ survey, onBack }) => {
               </h1>
               <div className="flex items-center justify-center space-x-2 text-gray-400">
                 <span>📊</span>
-                <span>{survey.questions.length} {survey.questions.length === 1 ? t('question_singular') : t('question_plural')}</span>
+                <span>{(survey.questions || []).length} {(survey.questions || []).length === 1 ? t('question_singular') : t('question_plural')}</span>
               </div>
             </div>
             <div className="space-y-6 sm:space-y-8">
-              {survey.questions
+              {(survey.questions || [])
                 .sort((a, b) => a.orderNumber - b.orderNumber)
                 .map((q, index) => {
                   let options = [];

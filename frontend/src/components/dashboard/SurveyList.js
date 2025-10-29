@@ -94,7 +94,7 @@ const SurveyList = ({
               const createdDate = new Date(s.createdDate);
               const expireDate = s.expireDate ? new Date(s.expireDate) : null;
               const isExpired = expireDate && expireDate < new Date();
-              const totalAnswers = s.questions.reduce((acc, q) => acc + (q.answers?.length || 0), 0);
+              const totalAnswers = (s.questions || []).reduce((acc, q) => acc + (q.answers?.length || 0), 0);
               
               return (
                 <div
@@ -123,7 +123,7 @@ const SurveyList = ({
                       <div className="flex items-center justify-between mb-4 text-sm">
                         <div className="flex items-center space-x-2 text-gray-400">
                           <span>📝</span>
-                          <span>{t('questions_count', { count: s.questions.length })}</span>
+                          <span>{t('questions_count', { count: s.questions?.length || 0 })}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-gray-400">
                           <span>👥</span>

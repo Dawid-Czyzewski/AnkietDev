@@ -75,9 +75,13 @@ const Overview = () => {
 
   const handleCreate = async survey => {
     try {
+      // Add the new survey to the list
       setSurveys(prev => [survey, ...prev]);
       toast.success(t('created_successfully'));
-      goToList();
+      
+      // Navigate to the list view
+      setSelectedSurvey(null);
+      setPage('list');
     } catch (err) {
       console.error('Error in handleCreate:', err);
       toast.error(t('error_creating_survey'));
@@ -86,10 +90,11 @@ const Overview = () => {
 
   const handleUpdate = async survey => {
     setSurveys(prev => prev.map(s => (s.id === survey.id ? survey : s)));
-    goToList();
+    setSelectedSurvey(null);
+    setPage('list');
   };
 
-  const content = (() => {
+  const renderContent = () => {
     switch (page) {
       case 'view':
         return <SurveyView survey={selectedSurvey} onBack={goToList} />;
@@ -110,11 +115,11 @@ const Overview = () => {
           />
         );
     }
-  })();
+  };
 
   return (
     <>
-      {content}
+      {renderContent()}
 
       <Modal
         show={deleteModal.show}

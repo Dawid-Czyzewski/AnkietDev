@@ -48,7 +48,7 @@ const Survey = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (!survey) return;
-    for (const q of survey.questions) {
+    for (const q of survey.questions || []) {
       const ans = answers[q.id];
       if (!ans || (Array.isArray(ans) ? ans.length === 0 : !ans.toString().trim())) {
         toast.error(t('error_answer_required', { number: q.orderNumber }));
@@ -57,7 +57,7 @@ const Survey = () => {
     }
     const payload = {
       surveyId: survey.id,
-      answers: survey.questions.map(q => ({ questionId: q.id, answer: answers[q.id] })),
+      answers: (survey.questions || []).map(q => ({ questionId: q.id, answer: answers[q.id] })),
     };
 
     setSubmitting(true);
@@ -167,7 +167,7 @@ const Survey = () => {
           <div className="flex items-center justify-center space-x-4 text-gray-400 text-sm">
             <div className="flex items-center space-x-1">
               <span>📊</span>
-              <span>{survey.questions.length} {survey.questions.length === 1 ? t('question_singular') : t('question_plural')}</span>
+              <span>{(survey.questions || []).length} {(survey.questions || []).length === 1 ? t('question_singular') : t('question_plural')}</span>
             </div>
             {survey.expireDate && (
               <div className="flex items-center space-x-1">
@@ -182,7 +182,7 @@ const Survey = () => {
           <div className="group relative backdrop-blur-xl bg-gray-800/30 border border-white/10 rounded-2xl p-8 hover:bg-gray-800/40 transition-all duration-300">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/5 to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
             <div className="relative z-10 space-y-8">
-              {survey.questions.map((q, index) => (
+              {(survey.questions || []).map((q, index) => (
                 <div key={q.id} className="group/question relative backdrop-blur-xl bg-gray-800/20 border border-white/10 rounded-2xl p-6 hover:bg-gray-800/30 transition-all duration-300">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/5 to-blue-600/5 opacity-0 group-hover/question:opacity-100 transition-opacity duration-300 blur-sm"></div>
                   
